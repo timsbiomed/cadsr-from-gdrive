@@ -1,6 +1,6 @@
 from googleapiclient.discovery import build
 import re
-from authorize import authorize
+from .authorize import authorize
 import sys 
 
 def extract_cadsr(sheet_id):

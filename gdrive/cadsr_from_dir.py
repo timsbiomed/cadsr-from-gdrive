@@ -1,8 +1,8 @@
 import sys
 from googleapiclient.discovery import build
 import time
-from cadsr_from_sheet import extract_cadsr
-from authorize import authorize
+from .cadsr_from_sheet import extract_cadsr
+from .authorize import authorize
 
 def iterfiles(service, name=None, is_folder=None, parent=None, order_by='folder,name,createdTime'):
     q = []

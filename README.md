@@ -19,13 +19,13 @@ pipenv install
 To run the script, simply do the following to traverse a directory and process all the Google sheets in the directory and subdirectories. 
 
 ```
-pipenv run python gdrive/cadsr_from_dir.py <google_drive_folder_id> <output_file>
+pipenv run python -m gdrive.cadsr_from_dir <google_drive_folder_id> <output_file>
 ``` 
 
 Or run the following to extract caDSR identifers from a Google sheet. 
 
 ```
-pipenv run python gdrive/cadsr_from_sheet.py <google_sheet_id> <output_file>
+pipenv run python -m gdrive.cadsr_from_sheet <google_sheet_id> <output_file>
 ```
 
 caDSR identifers will be stored in `output_file`. 
