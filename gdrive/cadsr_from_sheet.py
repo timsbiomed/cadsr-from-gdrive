@@ -1,8 +1,9 @@
 from googleapiclient.discovery import build
 import re
 from authorize import authorize
+import sys 
 
-def extract_cadsr(sheet_id, credentials):
+def extract_cadsr(sheet_id):
     """
     Traverse all the sheets in a Google sheet and extract all caDSR identifiers
     """
@@ -35,7 +36,7 @@ if __name__ == '__main__':
     sheet_id = sys.argv[1]
     output = sys.argv[2]
 
-    ids = set(id for id in extract_cadsr(sheet_id, creds))
+    ids = set(id for id in extract_cadsr(sheet_id))
     with open(output, 'w') as fh:     
         for id in ids:
             fh.write(id + '\n')
