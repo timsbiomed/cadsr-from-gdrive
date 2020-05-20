@@ -25,8 +25,8 @@ def iterfiles(service, name=None, is_folder=None, parent=None, order_by='folder,
             return
 
 
-def iter_directory(dir_id, credentials):
-    service = build('drive', 'v3', credentials=credentials)
+def iter_directory(dir_id):
+    service = build('drive', 'v3', credentials=authorize())
     root = service.files().get(fileId=dir_id).execute()
     stack = [((root['name'],), root)]
     while stack: 
@@ -48,14 +48,12 @@ if __name__ == '__main__':
     output = sys.argv[2]
 
     # If modifying these scopes, delete the file token.pickle.
-    scopes = ['https://www.googleapis.com/auth/spreadsheets.readonly', 'https://www.googleapis.com/auth/drive.metadata.readonly']
-    creds = authorize(scopes)
     ids = set()
-    for path, root, dirs, files in iter_directory(folder_id, creds):
+    for path, root, dirs, files in iter_directory(folder_id):
         for f in files:
             if f['mimeType'] == 'application/vnd.google-apps.spreadsheet':
                 print(f)
-                for id in extract_cadsr(f['id'], creds):
+                for id in extract_cadsr(f['id']):
                     ids.add(id)
                 time.sleep(10)  # sleep such that the script won't exceed quota
         # print('%s\t%d %d' % (path, len(dirs), len(files)))
