@@ -1,33 +1,8 @@
-from __future__ import print_function
-import pickle
-import os.path
 import sys
-import re
 from googleapiclient.discovery import build
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
 import time
-
-def authorize(scopes):
-    creds = None
-    # The file token.pickle stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
-    if os.path.exists('token.pickle'):
-        with open('token.pickle', 'rb') as token:
-            creds = pickle.load(token)
-    # If there are no (valid) credentials available, let the user log in.
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file('credentials.json', scopes)
-            creds = flow.run_local_server(port=0)
-        # Save the credentials for the next run
-        with open('token.pickle', 'wb') as token:
-            pickle.dump(creds, token)
-    return creds
-
+from cadsr_from_sheet import extract_cadsr
+from authorize import authorize
 
 def iterfiles(service, name=None, is_folder=None, parent=None, order_by='folder,name,createdTime'):
     q = []
@@ -63,30 +38,6 @@ def iter_directory(dir_id, credentials):
         if dirs:
             stack.extend((path + (d['name'],), d) for d in reversed(dirs))
 
-
-def extract_cadsr(sheet_id, credentials):
-    """
-    Traverse all the sheets in a Google sheet and extract all caDSR identifiers
-    """
-    service = build('sheets', 'v4', credentials=credentials)
-
-    # List all sheets
-    sheet_metadata = service.spreadsheets().get(spreadsheetId=sheet_id).execute()
-    sheets = sheet_metadata.get('sheets', '')
-    ranges = [sheet['properties']['title'] for sheet in sheets]
-
-    # Call the Sheets API
-    result = service.spreadsheets().values().batchGet(spreadsheetId=sheet_id, ranges=ranges).execute()
-    valueRanges = result.get('valueRanges', [])
-
-    for values in valueRanges:
-        if 'values' not in values:
-            continue
-        for row in values['values']:
-            for cell in row:
-                z = re.findall(r'^(\d+)\s+-\s+cadsr$', cell.lower().strip())
-                if z:
-                    yield z[0]
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
